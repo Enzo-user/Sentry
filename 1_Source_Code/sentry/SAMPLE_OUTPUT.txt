@@ -1,0 +1,162 @@
+# Sentry — captured sample output
+# Command: sentry samples/sshd_config.bad samples/nginx.conf.bad samples/docker-compose.bad.yml
+
+─────────────────────── samples/sshd_config.bad  (sshd) ────────────────────────
+   HIGH     SSH-001  Direct root login over SSH is permitted
+      line 3: found 'yes', expected 'no'
+      fix: Set 'PermitRootLogin no' (or 'prohibit-password' if key-only root is 
+required).
+      ref: CIS SSH 5.2.8
+
+   HIGH     SSH-003  Empty passwords are permitted
+      line 5: found 'yes', expected 'no'
+      fix: Set 'PermitEmptyPasswords no'.
+      ref: CIS SSH 5.2.9
+
+   HIGH     SSH-010  Weak or legacy ciphers allowed
+      line 9: contains disallowed value(s): 3des, cbc
+      fix: Restrict 'Ciphers' to modern AEAD suites (e.g. chacha20-poly1305, 
+aes256-gcm).
+      ref: Mozilla OpenSSH guidelines
+
+  MEDIUM    SSH-002  Password authentication is enabled
+      line 4: found 'yes', expected 'no'
+      fix: Set 'PasswordAuthentication no' and provision users with SSH keys.
+      ref: CIS SSH 5.2.10
+
+  MEDIUM    SSH-002  Password authentication is enabled
+      line 14: found 'yes', expected 'no'
+      fix: Set 'PasswordAuthentication no' and provision users with SSH keys.
+      ref: CIS SSH 5.2.10
+
+  MEDIUM    SSH-005  MaxAuthTries is too high
+      line 7: value 6.0 exceeds recommended maximum of 4.0
+      fix: Set 'MaxAuthTries 4' or lower.
+      ref: CIS SSH 5.2.5
+
+  MEDIUM    SSH-011  User environment processing is enabled
+      line 11: found 'yes', expected 'no'
+      fix: Set 'PermitUserEnvironment no'.
+      ref: CIS SSH 5.2.11
+
+   LOW      SSH-006  LoginGraceTime is too long
+      line 8: value 120.0 exceeds recommended maximum of 60.0
+      fix: Set 'LoginGraceTime 60' (seconds) or lower.
+      ref: CIS SSH 5.2.17
+
+   LOW      SSH-007  No idle-session timeout configured
+      config: setting is not present; relying on an insecure default
+      fix: Set 'ClientAliveInterval 300' and 'ClientAliveCountMax 0'.
+      ref: CIS SSH 5.2.16
+
+   LOW      SSH-008  X11 forwarding is enabled
+      line 6: found 'yes', expected 'no'
+      fix: Set 'X11Forwarding no'.
+      ref: CIS SSH 5.2.6
+
+   LOW      SSH-012  TCP forwarding is allowed
+      line 10: found 'yes', expected 'no'
+      fix: Set 'AllowTcpForwarding no' unless explicitly required.
+      ref: OpenSSH sshd_config(5)
+
+─────────────────────── samples/nginx.conf.bad  (nginx) ────────────────────────
+   HIGH     NGX-001  Deprecated TLS/SSL protocol versions enabled
+      line 10: contains disallowed value(s): TLSv1 , TLSv1.1
+      fix: Use only modern protocols: 'ssl_protocols TLSv1.2 TLSv1.3;'.
+      ref: Mozilla SSL Configuration Generator
+
+   HIGH     NGX-003  Missing HTTP Strict Transport Security (HSTS) header
+      config: no matching directive sets 'Strict-Transport-Security'
+      fix: Add 'add_header Strict-Transport-Security "max-age=63072000; 
+includeSubDomains" always;'.
+      ref: OWASP Secure Headers Project
+
+   HIGH     NGX-008  Weak SSL cipher suite string
+      line 11: contains disallowed value(s): NULL, RC4, MD5, aNULL
+      fix: Restrict 'ssl_ciphers' to a modern list (e.g. Mozilla intermediate).
+      ref: Mozilla SSL Configuration Generator
+
+  MEDIUM    NGX-004  Missing X-Frame-Options / frame-ancestors protection
+      config: no matching directive sets 'X-Frame-Options'
+      fix: Add 'add_header X-Frame-Options "SAMEORIGIN" always;'.
+      ref: OWASP Secure Headers Project
+
+  MEDIUM    NGX-007  Directory autoindex is enabled
+      line 4: found 'on', expected 'off'
+      fix: Set 'autoindex off;' (or remove the directive).
+      ref: nginx autoindex module
+
+   LOW      NGX-002  Server version banner is exposed
+      line 3: found 'on', expected 'off'
+      fix: Add 'server_tokens off;'.
+      ref: nginx core module docs
+
+   LOW      NGX-005  Missing X-Content-Type-Options header
+      config: no matching directive sets 'X-Content-Type-Options'
+      fix: Add 'add_header X-Content-Type-Options "nosniff" always;'.
+      ref: OWASP Secure Headers Project
+
+   LOW      NGX-006  Server does not prefer its own cipher order
+      line 12: found 'off', expected 'on'
+      fix: Add 'ssl_prefer_server_ciphers on;'.
+      ref: Mozilla SSL Configuration Generator
+
+   LOW      NGX-009  TLS session tickets are enabled
+      line 13: found 'on', expected 'off'
+      fix: Set 'ssl_session_tickets off;'.
+      ref: Mozilla server-side TLS guidance
+
+─────────────── samples/docker-compose.bad.yml  (docker-compose) ───────────────
+   HIGH     DC-001  Container runs in privileged mode
+      config: insecure value 'true' is set
+      fix: Remove 'privileged: true'; grant only the specific capabilities you 
+need.
+      ref: Docker security best practices
+
+   HIGH     DC-003  Container shares the host PID namespace
+      config: insecure value 'host' is set
+      fix: Remove 'pid: host'.
+      ref: Docker security best practices
+
+   HIGH     DC-004  Dangerous Linux capability added
+      config: value 'SYS_ADMIN' matches forbidden pattern 
+/(?i)^(SYS_ADMIN|NET_ADMIN|SYS_PTRACE|ALL)$/
+      fix: Drop all capabilities and add back only the minimal set required.
+      ref: Docker cap-add documentation
+
+   HIGH     DC-005  Possible hardcoded secret in environment
+      config: variable 'postgres_password' appears to hold a hardcoded secret
+      fix: Move secrets to Docker secrets or an .env file that is git-ignored.
+      ref: Docker secrets management
+
+  MEDIUM    DC-002  Container shares the host network namespace
+      config: insecure value 'host' is set
+      fix: Use the default bridge network and publish only the ports you need.
+      ref: Docker networking docs
+
+  MEDIUM    DC-006  Port published on all interfaces (0.0.0.0)
+      config: value '0.0.0.0:80:80' matches forbidden pattern /^0\.0\.0\.0:/
+      fix: Bind sensitive services to 127.0.0.1 (e.g. '127.0.0.1:5432:5432').
+      ref: Docker compose ports reference
+
+   LOW      DC-007  Image uses a mutable ':latest' tag
+      config: value 'nginx:latest' matches forbidden pattern /:latest$/
+      fix: Pin images to a specific version or digest.
+      ref: Docker image tagging best practices
+
+   LOW      DC-008  No 'no-new-privileges' security option set
+      config: setting is not present; relying on an insecure default
+      fix: Add security_opt: ["no-new-privileges:true"] to each service.
+      ref: Docker run security options
+
+─────────────────────────────────── Summary ────────────────────────────────────
+28 finding(s):  10 HIGH  8 MEDIUM  10 LOW
+
+############################################################
+# Command: sentry samples/sshd_config.good
+
+─────────────────────── samples/sshd_config.good  (sshd) ───────────────────────
+  No findings. Configuration looks hardened.
+
+─────────────────────────────────── Summary ────────────────────────────────────
+All clear -- no findings across scanned files.

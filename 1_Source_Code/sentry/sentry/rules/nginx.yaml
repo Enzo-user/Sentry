@@ -1,0 +1,110 @@
+# Hardening rules for nginx configuration.
+# Directives are matched by name regardless of the block they appear in.
+
+- id: NGX-001
+  title: Deprecated TLS/SSL protocol versions enabled
+  severity: high
+  rationale: TLS 1.0/1.1 and any SSL version are broken or deprecated and expose users to downgrade attacks.
+  remediation: "Use only modern protocols: 'ssl_protocols TLSv1.2 TLSv1.3;'."
+  reference: Mozilla SSL Configuration Generator
+  match:
+    selector: ssl_protocols
+    assert: not_contains
+    value: ["TLSv1;", "TLSv1 ", "TLSv1.1", "SSLv2", "SSLv3"]
+    on_missing: pass
+
+- id: NGX-002
+  title: Server version banner is exposed
+  severity: low
+  rationale: Leaking the exact nginx version helps attackers match known CVEs to your server.
+  remediation: Add 'server_tokens off;'.
+  reference: nginx core module docs
+  match:
+    selector: server_tokens
+    assert: equals
+    value: "off"
+    on_missing: warn
+
+- id: NGX-003
+  title: Missing HTTP Strict Transport Security (HSTS) header
+  severity: high
+  rationale: Without HSTS, clients can be downgraded to plaintext HTTP by a network attacker.
+  remediation: Add 'add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;'.
+  reference: OWASP Secure Headers Project
+  match:
+    selector: add_header
+    assert: any_contains
+    value: Strict-Transport-Security
+    on_missing: warn
+
+- id: NGX-004
+  title: Missing X-Frame-Options / frame-ancestors protection
+  severity: medium
+  rationale: Without frame protection the site can be embedded and clickjacked.
+  remediation: Add 'add_header X-Frame-Options "SAMEORIGIN" always;'.
+  reference: OWASP Secure Headers Project
+  match:
+    selector: add_header
+    assert: any_contains
+    value: X-Frame-Options
+    on_missing: warn
+
+- id: NGX-005
+  title: Missing X-Content-Type-Options header
+  severity: low
+  rationale: MIME-sniffing can turn benign uploads into executable content.
+  remediation: Add 'add_header X-Content-Type-Options "nosniff" always;'.
+  reference: OWASP Secure Headers Project
+  match:
+    selector: add_header
+    assert: any_contains
+    value: X-Content-Type-Options
+    on_missing: warn
+
+- id: NGX-006
+  title: Server does not prefer its own cipher order
+  severity: low
+  rationale: Letting the client choose ciphers can favour weaker suites.
+  remediation: Add 'ssl_prefer_server_ciphers on;'.
+  reference: Mozilla SSL Configuration Generator
+  match:
+    selector: ssl_prefer_server_ciphers
+    assert: equals
+    value: "on"
+    on_missing: warn
+
+- id: NGX-007
+  title: Directory autoindex is enabled
+  severity: medium
+  rationale: Autoindex exposes a browsable listing of files, leaking structure and possibly secrets.
+  remediation: Set 'autoindex off;' (or remove the directive).
+  reference: nginx autoindex module
+  match:
+    selector: autoindex
+    assert: equals
+    value: "off"
+    on_missing: pass
+
+- id: NGX-008
+  title: Weak SSL cipher suite string
+  severity: high
+  rationale: NULL, EXPORT, RC4, MD5 and DES-based ciphers are insecure.
+  remediation: Restrict 'ssl_ciphers' to a modern list (e.g. Mozilla intermediate).
+  reference: Mozilla SSL Configuration Generator
+  match:
+    selector: ssl_ciphers
+    assert: not_contains
+    value: ["NULL", "EXPORT", "RC4", "MD5", "DES", "aNULL"]
+    on_missing: pass
+
+- id: NGX-009
+  title: TLS session tickets are enabled
+  severity: low
+  rationale: Session tickets can weaken forward secrecy if ticket keys are not rotated.
+  remediation: Set 'ssl_session_tickets off;'.
+  reference: Mozilla server-side TLS guidance
+  match:
+    selector: ssl_session_tickets
+    assert: equals
+    value: "off"
+    on_missing: pass

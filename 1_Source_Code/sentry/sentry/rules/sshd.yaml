@@ -1,0 +1,149 @@
+# Hardening rules for OpenSSH server config (sshd_config).
+# References are drawn from the CIS Benchmarks and the OpenSSH manual.
+# Each rule is pure data: id, severity, what to look for (match), and how to fix it.
+
+- id: SSH-001
+  title: Direct root login over SSH is permitted
+  severity: high
+  rationale: >
+    Allowing root to log in directly removes an accountability layer and makes
+    the most powerful account a direct brute-force target.
+  remediation: Set 'PermitRootLogin no' (or 'prohibit-password' if key-only root is required).
+  reference: CIS SSH 5.2.8
+  match:
+    selector: PermitRootLogin
+    assert: equals
+    value: "no"
+    on_missing: warn
+
+- id: SSH-002
+  title: Password authentication is enabled
+  severity: medium
+  rationale: Password auth is vulnerable to brute-force and credential stuffing; key-based auth is far stronger.
+  remediation: Set 'PasswordAuthentication no' and provision users with SSH keys.
+  reference: CIS SSH 5.2.10
+  match:
+    selector: PasswordAuthentication
+    assert: equals
+    value: "no"
+    on_missing: pass
+
+- id: SSH-003
+  title: Empty passwords are permitted
+  severity: high
+  rationale: Accounts with blank passwords let anyone in with just a username.
+  remediation: Set 'PermitEmptyPasswords no'.
+  reference: CIS SSH 5.2.9
+  match:
+    selector: PermitEmptyPasswords
+    assert: equals
+    value: "no"
+    on_missing: pass
+
+- id: SSH-004
+  title: Host-based authentication is enabled
+  severity: high
+  rationale: Host-based trust can be abused if any trusted host is compromised.
+  remediation: Set 'HostbasedAuthentication no'.
+  reference: CIS SSH 5.2.7
+  match:
+    selector: HostbasedAuthentication
+    assert: equals
+    value: "no"
+    on_missing: pass
+
+- id: SSH-005
+  title: MaxAuthTries is too high
+  severity: medium
+  rationale: A high retry ceiling makes online brute-force attacks easier.
+  remediation: Set 'MaxAuthTries 4' or lower.
+  reference: CIS SSH 5.2.5
+  match:
+    selector: MaxAuthTries
+    assert: at_most
+    value: 4
+    on_missing: warn
+
+- id: SSH-006
+  title: LoginGraceTime is too long
+  severity: low
+  rationale: A long grace window keeps unauthenticated connections open, aiding resource-exhaustion attacks.
+  remediation: Set 'LoginGraceTime 60' (seconds) or lower.
+  reference: CIS SSH 5.2.17
+  match:
+    selector: LoginGraceTime
+    assert: at_most
+    value: 60
+    on_missing: warn
+
+- id: SSH-007
+  title: No idle-session timeout configured
+  severity: low
+  rationale: Idle sessions left open are an opportunity for hijacking of unattended terminals.
+  remediation: Set 'ClientAliveInterval 300' and 'ClientAliveCountMax 0'.
+  reference: CIS SSH 5.2.16
+  match:
+    selector: ClientAliveInterval
+    assert: at_most
+    value: 300
+    on_missing: warn
+
+- id: SSH-008
+  title: X11 forwarding is enabled
+  severity: low
+  rationale: X11 forwarding widens the attack surface and is rarely needed on servers.
+  remediation: Set 'X11Forwarding no'.
+  reference: CIS SSH 5.2.6
+  match:
+    selector: X11Forwarding
+    assert: equals
+    value: "no"
+    on_missing: pass
+
+- id: SSH-009
+  title: .rhosts files are not ignored
+  severity: medium
+  rationale: Honouring .rhosts revives an old, insecure trust mechanism.
+  remediation: Set 'IgnoreRhosts yes'.
+  reference: CIS SSH 5.2.7
+  match:
+    selector: IgnoreRhosts
+    assert: equals
+    value: "yes"
+    on_missing: pass
+
+- id: SSH-010
+  title: Weak or legacy ciphers allowed
+  severity: high
+  rationale: CBC-mode, 3DES and arcfour ciphers are cryptographically weak and should not be offered.
+  remediation: Restrict 'Ciphers' to modern AEAD suites (e.g. chacha20-poly1305, aes256-gcm).
+  reference: Mozilla OpenSSH guidelines
+  match:
+    selector: Ciphers
+    assert: not_contains
+    value: ["3des", "arcfour", "cbc", "blowfish"]
+    on_missing: pass
+
+- id: SSH-011
+  title: User environment processing is enabled
+  severity: medium
+  rationale: PermitUserEnvironment lets users inject environment variables that can bypass restrictions.
+  remediation: Set 'PermitUserEnvironment no'.
+  reference: CIS SSH 5.2.11
+  match:
+    selector: PermitUserEnvironment
+    assert: equals
+    value: "no"
+    on_missing: pass
+
+- id: SSH-012
+  title: TCP forwarding is allowed
+  severity: low
+  rationale: Allowing TCP forwarding can enable pivoting and tunnelling out of a restricted host.
+  remediation: Set 'AllowTcpForwarding no' unless explicitly required.
+  reference: OpenSSH sshd_config(5)
+  match:
+    selector: AllowTcpForwarding
+    assert: equals
+    value: "no"
+    on_missing: pass

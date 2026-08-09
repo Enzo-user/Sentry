@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentry Security Report</title>
+<style>
+:root{--bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0b1120;--card:#111827;--ink:#e5e7eb;--muted:#94a3b8;--line:#1f2937;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px 80px}
+header h1{margin:0;font-size:26px;letter-spacing:-.02em}
+header .sub{color:var(--muted);font-size:14px;margin-top:4px}
+.chips{margin:20px 0 8px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{color:#fff;font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px}
+.chip.total{background:#334155}
+section.file{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px;margin-top:22px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+section.file h2{margin:0 0 14px;font-size:17px;display:flex;align-items:center;gap:10px}
+.type{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line);
+  padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+.clear{color:#16a34a;font-weight:600;margin:0}
+.finding{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.finding:first-of-type{border-top:none}
+.sev{color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;padding:4px 8px;
+  border-radius:6px;height:fit-content;min-width:64px;text-align:center}
+.titlerow{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+.rid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted)}
+.title{font-weight:600}
+.loc{font-size:12px;color:var(--muted)}
+.what{margin:6px 0}
+.meta{margin:2px 0;font-size:14px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+footer{margin-top:40px;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Sentry &mdash; Configuration Security Report</h1>
+      <div class="sub">Generated 2026-08-09 10:51 &middot; sentry v0.1.0</div>
+    </header>
+    <div class="chips"><span class="chip total">28 total</span><span class="chip" style="background:#dc2626">10 High</span><span class="chip" style="background:#d97706">8 Medium</span><span class="chip" style="background:#0891b2">10 Low</span></div>
+    <section class="file"><h2>samples/sshd_config.bad<span class="type">sshd</span></h2>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-001</span>
+              <span class="title">Direct root login over SSH is permitted</span>
+              <span class="loc">line 3</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;PermitRootLogin no&#x27; (or &#x27;prohibit-password&#x27; if key-only root is required).</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.8</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-003</span>
+              <span class="title">Empty passwords are permitted</span>
+              <span class="loc">line 5</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;PermitEmptyPasswords no&#x27;.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.9</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-010</span>
+              <span class="title">Weak or legacy ciphers allowed</span>
+              <span class="loc">line 9</span>
+            </div>
+            <p class="what">contains disallowed value(s): 3des, cbc</p>
+            <p class="meta"><b>Fix:</b> Restrict &#x27;Ciphers&#x27; to modern AEAD suites (e.g. chacha20-poly1305, aes256-gcm).</p>
+            <p class="meta"><b>Reference:</b> Mozilla OpenSSH guidelines</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-002</span>
+              <span class="title">Password authentication is enabled</span>
+              <span class="loc">line 4</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;PasswordAuthentication no&#x27; and provision users with SSH keys.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.10</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-002</span>
+              <span class="title">Password authentication is enabled</span>
+              <span class="loc">line 14</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;PasswordAuthentication no&#x27; and provision users with SSH keys.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.10</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-005</span>
+              <span class="title">MaxAuthTries is too high</span>
+              <span class="loc">line 7</span>
+            </div>
+            <p class="what">value 6.0 exceeds recommended maximum of 4.0</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;MaxAuthTries 4&#x27; or lower.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.5</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-011</span>
+              <span class="title">User environment processing is enabled</span>
+              <span class="loc">line 11</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;PermitUserEnvironment no&#x27;.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.11</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-006</span>
+              <span class="title">LoginGraceTime is too long</span>
+              <span class="loc">line 8</span>
+            </div>
+            <p class="what">value 120.0 exceeds recommended maximum of 60.0</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;LoginGraceTime 60&#x27; (seconds) or lower.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.17</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-007</span>
+              <span class="title">No idle-session timeout configured</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">setting is not present; relying on an insecure default</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;ClientAliveInterval 300&#x27; and &#x27;ClientAliveCountMax 0&#x27;.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.16</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-008</span>
+              <span class="title">X11 forwarding is enabled</span>
+              <span class="loc">line 6</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;X11Forwarding no&#x27;.</p>
+            <p class="meta"><b>Reference:</b> CIS SSH 5.2.6</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">SSH-012</span>
+              <span class="title">TCP forwarding is allowed</span>
+              <span class="loc">line 10</span>
+            </div>
+            <p class="what">found &#x27;yes&#x27;, expected &#x27;no&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;AllowTcpForwarding no&#x27; unless explicitly required.</p>
+            <p class="meta"><b>Reference:</b> OpenSSH sshd_config(5)</p>
+          </div>
+        </article></section>
+<section class="file"><h2>samples/nginx.conf.bad<span class="type">nginx</span></h2>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-001</span>
+              <span class="title">Deprecated TLS/SSL protocol versions enabled</span>
+              <span class="loc">line 10</span>
+            </div>
+            <p class="what">contains disallowed value(s): TLSv1 , TLSv1.1</p>
+            <p class="meta"><b>Fix:</b> Use only modern protocols: &#x27;ssl_protocols TLSv1.2 TLSv1.3;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> Mozilla SSL Configuration Generator</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-003</span>
+              <span class="title">Missing HTTP Strict Transport Security (HSTS) header</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">no matching directive sets &#x27;Strict-Transport-Security&#x27;</p>
+            <p class="meta"><b>Fix:</b> Add &#x27;add_header Strict-Transport-Security &quot;max-age=63072000; includeSubDomains&quot; always;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> OWASP Secure Headers Project</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-008</span>
+              <span class="title">Weak SSL cipher suite string</span>
+              <span class="loc">line 11</span>
+            </div>
+            <p class="what">contains disallowed value(s): NULL, RC4, MD5, aNULL</p>
+            <p class="meta"><b>Fix:</b> Restrict &#x27;ssl_ciphers&#x27; to a modern list (e.g. Mozilla intermediate).</p>
+            <p class="meta"><b>Reference:</b> Mozilla SSL Configuration Generator</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-004</span>
+              <span class="title">Missing X-Frame-Options / frame-ancestors protection</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">no matching directive sets &#x27;X-Frame-Options&#x27;</p>
+            <p class="meta"><b>Fix:</b> Add &#x27;add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> OWASP Secure Headers Project</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-007</span>
+              <span class="title">Directory autoindex is enabled</span>
+              <span class="loc">line 4</span>
+            </div>
+            <p class="what">found &#x27;on&#x27;, expected &#x27;off&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;autoindex off;&#x27; (or remove the directive).</p>
+            <p class="meta"><b>Reference:</b> nginx autoindex module</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-002</span>
+              <span class="title">Server version banner is exposed</span>
+              <span class="loc">line 3</span>
+            </div>
+            <p class="what">found &#x27;on&#x27;, expected &#x27;off&#x27;</p>
+            <p class="meta"><b>Fix:</b> Add &#x27;server_tokens off;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> nginx core module docs</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-005</span>
+              <span class="title">Missing X-Content-Type-Options header</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">no matching directive sets &#x27;X-Content-Type-Options&#x27;</p>
+            <p class="meta"><b>Fix:</b> Add &#x27;add_header X-Content-Type-Options &quot;nosniff&quot; always;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> OWASP Secure Headers Project</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-006</span>
+              <span class="title">Server does not prefer its own cipher order</span>
+              <span class="loc">line 12</span>
+            </div>
+            <p class="what">found &#x27;off&#x27;, expected &#x27;on&#x27;</p>
+            <p class="meta"><b>Fix:</b> Add &#x27;ssl_prefer_server_ciphers on;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> Mozilla SSL Configuration Generator</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">NGX-009</span>
+              <span class="title">TLS session tickets are enabled</span>
+              <span class="loc">line 13</span>
+            </div>
+            <p class="what">found &#x27;on&#x27;, expected &#x27;off&#x27;</p>
+            <p class="meta"><b>Fix:</b> Set &#x27;ssl_session_tickets off;&#x27;.</p>
+            <p class="meta"><b>Reference:</b> Mozilla server-side TLS guidance</p>
+          </div>
+        </article></section>
+<section class="file"><h2>samples/docker-compose.bad.yml<span class="type">docker-compose</span></h2>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-001</span>
+              <span class="title">Container runs in privileged mode</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">insecure value &#x27;true&#x27; is set</p>
+            <p class="meta"><b>Fix:</b> Remove &#x27;privileged: true&#x27;; grant only the specific capabilities you need.</p>
+            <p class="meta"><b>Reference:</b> Docker security best practices</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-003</span>
+              <span class="title">Container shares the host PID namespace</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">insecure value &#x27;host&#x27; is set</p>
+            <p class="meta"><b>Fix:</b> Remove &#x27;pid: host&#x27;.</p>
+            <p class="meta"><b>Reference:</b> Docker security best practices</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-004</span>
+              <span class="title">Dangerous Linux capability added</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">value &#x27;SYS_ADMIN&#x27; matches forbidden pattern /(?i)^(SYS_ADMIN|NET_ADMIN|SYS_PTRACE|ALL)$/</p>
+            <p class="meta"><b>Fix:</b> Drop all capabilities and add back only the minimal set required.</p>
+            <p class="meta"><b>Reference:</b> Docker cap-add documentation</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#dc2626">HIGH</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-005</span>
+              <span class="title">Possible hardcoded secret in environment</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">variable &#x27;postgres_password&#x27; appears to hold a hardcoded secret</p>
+            <p class="meta"><b>Fix:</b> Move secrets to Docker secrets or an .env file that is git-ignored.</p>
+            <p class="meta"><b>Reference:</b> Docker secrets management</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-002</span>
+              <span class="title">Container shares the host network namespace</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">insecure value &#x27;host&#x27; is set</p>
+            <p class="meta"><b>Fix:</b> Use the default bridge network and publish only the ports you need.</p>
+            <p class="meta"><b>Reference:</b> Docker networking docs</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#d97706">MEDIUM</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-006</span>
+              <span class="title">Port published on all interfaces (0.0.0.0)</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">value &#x27;0.0.0.0:80:80&#x27; matches forbidden pattern /^0\.0\.0\.0:/</p>
+            <p class="meta"><b>Fix:</b> Bind sensitive services to 127.0.0.1 (e.g. &#x27;127.0.0.1:5432:5432&#x27;).</p>
+            <p class="meta"><b>Reference:</b> Docker compose ports reference</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-007</span>
+              <span class="title">Image uses a mutable &#x27;:latest&#x27; tag</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">value &#x27;nginx:latest&#x27; matches forbidden pattern /:latest$/</p>
+            <p class="meta"><b>Fix:</b> Pin images to a specific version or digest.</p>
+            <p class="meta"><b>Reference:</b> Docker image tagging best practices</p>
+          </div>
+        </article>
+        <article class="finding">
+          <div class="sev" style="background:#0891b2">LOW</div>
+          <div class="detail">
+            <div class="titlerow">
+              <span class="rid">DC-008</span>
+              <span class="title">No &#x27;no-new-privileges&#x27; security option set</span>
+              <span class="loc">config</span>
+            </div>
+            <p class="what">setting is not present; relying on an insecure default</p>
+            <p class="meta"><b>Fix:</b> Add security_opt: [&quot;no-new-privileges:true&quot;] to each service.</p>
+            <p class="meta"><b>Reference:</b> Docker run security options</p>
+          </div>
+        </article></section>
+    <footer>
+      Static analysis only. This tool inspects configuration text; it does not connect to or test any live system.
+    </footer>
+  </div>
+</body>
+</html>

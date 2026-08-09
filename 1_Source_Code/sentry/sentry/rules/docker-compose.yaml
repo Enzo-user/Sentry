@@ -1,0 +1,92 @@
+# Hardening rules for docker-compose files.
+# Keys are dotted paths produced by the compose parser, and '*' matches any
+# single path segment (usually a service name), so one rule covers all services.
+
+- id: DC-001
+  title: Container runs in privileged mode
+  severity: high
+  rationale: A privileged container has near-root access to the host and defeats container isolation.
+  remediation: "Remove 'privileged: true'; grant only the specific capabilities you need."
+  reference: Docker security best practices
+  match:
+    selector: services.*.privileged
+    assert: not_equals
+    value: "true"
+
+- id: DC-002
+  title: Container shares the host network namespace
+  severity: medium
+  rationale: "network_mode: host removes network isolation and exposes host interfaces to the container."
+  remediation: Use the default bridge network and publish only the ports you need.
+  reference: Docker networking docs
+  match:
+    selector: services.*.network_mode
+    assert: not_equals
+    value: host
+
+- id: DC-003
+  title: Container shares the host PID namespace
+  severity: high
+  rationale: "pid: host lets the container see and signal host processes."
+  remediation: "Remove 'pid: host'."
+  reference: Docker security best practices
+  match:
+    selector: services.*.pid
+    assert: not_equals
+    value: host
+
+- id: DC-004
+  title: Dangerous Linux capability added
+  severity: high
+  rationale: Capabilities like SYS_ADMIN or NET_ADMIN (or 'ALL') can be used to break out of the container.
+  remediation: Drop all capabilities and add back only the minimal set required.
+  reference: Docker cap-add documentation
+  match:
+    selector_regex: services\..*\.cap_add\.\d+
+    assert: regex_forbidden
+    value: "(?i)^(SYS_ADMIN|NET_ADMIN|SYS_PTRACE|ALL)$"
+
+- id: DC-005
+  title: Possible hardcoded secret in environment
+  severity: high
+  rationale: Passwords, tokens and keys committed in compose files leak to every repo clone and image layer.
+  remediation: Move secrets to Docker secrets or an .env file that is git-ignored.
+  reference: Docker secrets management
+  match:
+    selector_regex: services\..*\.environment\..*(password|passwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key).*
+    assert: secret
+    on_missing: pass
+
+- id: DC-006
+  title: Port published on all interfaces (0.0.0.0)
+  severity: medium
+  rationale: Binding to 0.0.0.0 exposes a service on every host interface, including public ones.
+  remediation: Bind sensitive services to 127.0.0.1 (e.g. '127.0.0.1:5432:5432').
+  reference: Docker compose ports reference
+  match:
+    selector_regex: services\..*\.ports\.\d+
+    assert: regex_forbidden
+    value: "^0\\.0\\.0\\.0:"
+
+- id: DC-007
+  title: Image uses a mutable ':latest' tag
+  severity: low
+  rationale: "':latest' is not reproducible and can silently pull in a changed or malicious image."
+  remediation: Pin images to a specific version or digest.
+  reference: Docker image tagging best practices
+  match:
+    selector_regex: services\..*\.image
+    assert: regex_forbidden
+    value: ":latest$"
+
+- id: DC-008
+  title: No 'no-new-privileges' security option set
+  severity: low
+  rationale: Without this flag, processes can gain privileges via setuid binaries inside the container.
+  remediation: 'Add security_opt: ["no-new-privileges:true"] to each service.'
+  reference: Docker run security options
+  match:
+    selector: security_opt
+    assert: any_contains
+    value: no-new-privileges
+    on_missing: warn

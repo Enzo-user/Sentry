@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentry-lint"
+version = "0.1.0"
+description = "A static security configuration linter for sshd, nginx, and docker-compose."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["security", "hardening", "linter", "sshd", "nginx", "docker-compose"]
+dependencies = [
+    "pyyaml>=6.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+sentry = "sentry.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sentry*"]
+
+[tool.setuptools.package-data]
+sentry = ["rules/*.yaml"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -1,0 +1,15 @@
+# A hardened sshd_config
+Port 22
+PermitRootLogin no
+PasswordAuthentication no
+PermitEmptyPasswords no
+HostbasedAuthentication no
+IgnoreRhosts yes
+X11Forwarding no
+MaxAuthTries 3
+LoginGraceTime 30
+ClientAliveInterval 300
+ClientAliveCountMax 0
+PermitUserEnvironment no
+AllowTcpForwarding no
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com

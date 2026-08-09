@@ -1,0 +1,14 @@
+# Deliberately weak sshd_config for testing Sentry
+Port 22
+PermitRootLogin yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+X11Forwarding yes
+MaxAuthTries 6
+LoginGraceTime 120
+Ciphers aes256-cbc,3des-cbc,aes128-ctr
+AllowTcpForwarding yes
+PermitUserEnvironment yes
+
+Match User deploy
+    PasswordAuthentication yes
