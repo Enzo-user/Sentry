@@ -15,7 +15,6 @@ connect to, scan, or test any live system.
 | `1_Source_Code/sentry/` | The complete source repository. See its `README.md` for installation, usage, sample output, limitations, the ethical disclaimer, and the original-contribution statement. |
 | `2_User_Manual/` | The user manual in DOCX and PDF (installation, usage, results explanation, troubleshooting, limitations, and ethical reminder). |
 | `3_Presentation/` | The project presentation (PPTX). |
-| `DEMO_SCRIPT.md` | Outline used to record the demonstration video (see below). |
 
 ## Running the Tool
 
@@ -41,8 +40,7 @@ manual and the repository `README.md`.
 
 ## Demonstration Video
 
-The demonstration video is submitted separately (YouTube or MP4). `DEMO_SCRIPT.md`
-contains the outline followed during recording.
+The demonstration video is submitted separately (YouTube or MP4). 
 
 ## Ethical Use
 
