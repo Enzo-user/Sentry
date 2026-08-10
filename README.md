@@ -1,8 +1,6 @@
 # Sentry (Submission Package)
 
-**Group:** Hood Security Department   
-
-**Course:** NSSECU2 (S04)
+**Group:** Hood Security Department   **Course:** NSSECU2 (S04)
 
 Sentry is a static security config linter for `sshd_config`, `nginx`, and
 `docker-compose` files. You point it at a config file and it tells you what's
