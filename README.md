@@ -39,7 +39,7 @@ Full steps, including the Windows 11 notes, are in the user manual and the sourc
 
 ## Demo video
 
-The demo video is submitted separately (YouTube or MP4).
+**[VIDEO](https://youtu.be/Hdom4mZGoTA)**
 
 ## Ethical use
 
